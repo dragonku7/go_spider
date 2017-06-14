@@ -2,6 +2,8 @@
 package spider
 
 import (
+	"math/rand"
+
 	"github.com/dragonku7/go_spider/core/common/mlog"
 	"github.com/dragonku7/go_spider/core/common/page"
 	"github.com/dragonku7/go_spider/core/common/page_items"
@@ -11,7 +13,6 @@ import (
 	"github.com/dragonku7/go_spider/core/page_processer"
 	"github.com/dragonku7/go_spider/core/pipeline"
 	"github.com/dragonku7/go_spider/core/scheduler"
-	"math/rand"
 	//"net/http"
 	"time"
 	//"fmt"
@@ -73,15 +74,15 @@ func (this *Spider) Taskname() string {
 }
 
 // Deal with one url and return the PageItems.
-func (this *Spider) Get(url string, respType string) *page_items.PageItems {
-	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+func (this *Spider) Get(url string, respType string, timeout time.Duration) *page_items.PageItems {
+	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 	return this.GetByRequest(req)
 }
 
 // Deal with several urls and return the PageItems slice.
-func (this *Spider) GetAll(urls []string, respType string) []*page_items.PageItems {
+func (this *Spider) GetAll(urls []string, respType string, timeout time.Duration) []*page_items.PageItems {
 	for _, u := range urls {
-		req := request.NewRequest(u, respType, "", "GET", "", nil, nil, nil, nil)
+		req := request.NewRequest(u, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 		this.AddRequest(req)
 	}
 
@@ -263,14 +264,14 @@ func (this *Spider) sleep() {
 	}
 }
 
-func (this *Spider) AddUrl(url string, respType string) *Spider {
-	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+func (this *Spider) AddUrl(url string, respType string, timeout time.Duration) *Spider {
+	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 	this.AddRequest(req)
 	return this
 }
 
-func (this *Spider) AddUrlEx(url string, respType string, headerFile string, proxyHost string) *Spider {
-	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+func (this *Spider) AddUrlEx(url string, respType string, headerFile string, proxyHost string, timeout time.Duration) *Spider {
+	req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 	this.AddRequest(req.AddHeaderFile(headerFile).AddProxyHost(proxyHost))
 	return this
 }
@@ -281,9 +282,9 @@ func (this *Spider) AddUrlWithHeaderFile(url string, respType string, headerFile
 	return this
 }
 
-func (this *Spider) AddUrls(urls []string, respType string) *Spider {
+func (this *Spider) AddUrls(urls []string, respType string, timeout time.Duration) *Spider {
 	for _, url := range urls {
-		req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+		req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 		this.AddRequest(req)
 	}
 	return this
@@ -297,9 +298,9 @@ func (this *Spider) AddUrlsWithHeaderFile(urls []string, respType string, header
 	return this
 }
 
-func (this *Spider) AddUrlsEx(urls []string, respType string, headerFile string, proxyHost string) *Spider {
+func (this *Spider) AddUrlsEx(urls []string, respType string, headerFile string, proxyHost string, timeout time.Duration) *Spider {
 	for _, url := range urls {
-		req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+		req := request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout)
 		this.AddRequest(req.AddHeaderFile(headerFile).AddProxyHost(proxyHost))
 	}
 	return this

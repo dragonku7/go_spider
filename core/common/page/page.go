@@ -3,13 +3,15 @@
 package page
 
 import (
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/bitly/go-simplejson"
 	"github.com/dragonku7/go_spider/core/common/mlog"
 	"github.com/dragonku7/go_spider/core/common/page_items"
 	"github.com/dragonku7/go_spider/core/common/request"
-	"net/http"
-	"strings"
 	//"fmt"
 )
 
@@ -132,30 +134,30 @@ func (this *Page) GetUrlTag() string {
 }
 
 // AddTargetRequest adds one new Request waitting for crawl.
-func (this *Page) AddTargetRequest(url string, respType string) *Page {
-	this.targetRequests = append(this.targetRequests, request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil))
+func (this *Page) AddTargetRequest(url string, respType string, timeout time.Duration) *Page {
+	this.targetRequests = append(this.targetRequests, request.NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, timeout))
 	return this
 }
 
 // AddTargetRequests adds new Requests waitting for crawl.
-func (this *Page) AddTargetRequests(urls []string, respType string) *Page {
+func (this *Page) AddTargetRequests(urls []string, respType string, timeout time.Duration) *Page {
 	for _, url := range urls {
-		this.AddTargetRequest(url, respType)
+		this.AddTargetRequest(url, respType, timeout)
 	}
 	return this
 }
 
 // AddTargetRequestWithProxy adds one new Request waitting for crawl.
-func (this *Page) AddTargetRequestWithProxy(url string, respType string, proxyHost string) *Page {
+func (this *Page) AddTargetRequestWithProxy(url string, respType string, proxyHost string, timeout time.Duration) *Page {
 
-	this.targetRequests = append(this.targetRequests, request.NewRequestWithProxy(url, respType, "", "GET", "", nil, nil, proxyHost, nil, nil))
+	this.targetRequests = append(this.targetRequests, request.NewRequestWithProxy(url, respType, "", "GET", "", nil, nil, proxyHost, nil, nil, timeout))
 	return this
 }
 
 // AddTargetRequestsWithProxy adds new Requests waitting for crawl.
-func (this *Page) AddTargetRequestsWithProxy(urls []string, respType string, proxyHost string) *Page {
+func (this *Page) AddTargetRequestsWithProxy(urls []string, respType string, proxyHost string, timeout time.Duration) *Page {
 	for _, url := range urls {
-		this.AddTargetRequestWithProxy(url, respType, proxyHost)
+		this.AddTargetRequestWithProxy(url, respType, proxyHost, timeout)
 	}
 	return this
 }

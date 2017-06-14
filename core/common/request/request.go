@@ -2,10 +2,12 @@
 package request
 
 import (
-	"github.com/bitly/go-simplejson"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/bitly/go-simplejson"
 
 	"github.com/dragonku7/go_spider/core/common/mlog"
 )
@@ -42,6 +44,8 @@ type Request struct {
 	checkRedirect func(req *http.Request, via []*http.Request) error
 
 	Meta interface{}
+
+	Timeout time.Duration
 }
 
 // NewRequest returns initialized Request object.
@@ -55,27 +59,27 @@ func NewRequestSimple(url string, respType string, urltag string) *Request {
 func NewRequest(url string, respType string, urltag string, method string,
 	postdata string, header http.Header, cookies []*http.Cookie,
 	checkRedirect func(req *http.Request, via []*http.Request) error,
-	meta interface{}) *Request {
-	return &Request{url, respType, method, postdata, urltag, header, cookies, "", checkRedirect, meta}
+	meta interface{}, timeout time.Duration) *Request {
+	return &Request{url, respType, method, postdata, urltag, header, cookies, "", checkRedirect, meta, timeout}
 }
 
 func NewRequestWithProxy(url string, respType string, urltag string, method string,
 	postdata string, header http.Header, cookies []*http.Cookie, proxyHost string,
 	checkRedirect func(req *http.Request, via []*http.Request) error,
-	meta interface{}) *Request {
-	return &Request{url, respType, method, postdata, urltag, header, cookies, proxyHost, checkRedirect, meta}
+	meta interface{}, timeout time.Duration) *Request {
+	return &Request{url, respType, method, postdata, urltag, header, cookies, proxyHost, checkRedirect, meta, timeout}
 }
 
 func NewRequestWithHeaderFile(url string, respType string, headerFile string) *Request {
 	_, err := os.Stat(headerFile)
 	if err != nil {
 		//file is not exist , using default mode
-		return NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil)
+		return NewRequest(url, respType, "", "GET", "", nil, nil, nil, nil, 10*time.Second)
 	}
 
 	h := readHeaderFromFile(headerFile)
 
-	return NewRequest(url, respType, "", "GET", "", h, nil, nil, nil)
+	return NewRequest(url, respType, "", "GET", "", h, nil, nil, nil, 10*time.Second)
 }
 
 func readHeaderFromFile(headerFile string) http.Header {
