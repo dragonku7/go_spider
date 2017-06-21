@@ -6,16 +6,17 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/bitly/go-simplejson"
 	//    iconv "github.com/djimenez/iconv-go"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+
 	"github.com/dragonku7/go_spider/core/common/mlog"
 	"github.com/dragonku7/go_spider/core/common/page"
 	"github.com/dragonku7/go_spider/core/common/request"
 	"github.com/dragonku7/go_spider/core/common/util"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	//"fmt"
 	//"golang.org/x/net/html/charset"
 	"regexp"
@@ -229,7 +230,16 @@ func connectByHttp(p *page.Page, req *request.Request) (*http.Response, error) {
 
 // choose a proxy server to excute http GET/method to download
 func connectByHttpProxy(p *page.Page, in_req *request.Request) (*http.Response, error) {
-	request, _ := http.NewRequest("GET", in_req.GetUrl(), nil)
+	request, _ := http.NewRequest(in_req.GetMethod(), in_req.GetUrl(), strings.NewReader(in_req.GetPostdata()))
+	if header := in_req.GetHeader(); header != nil {
+		request.Header = in_req.GetHeader()
+	}
+
+	if cookies := in_req.GetCookies(); cookies != nil {
+		for i := range cookies {
+			request.AddCookie(cookies[i])
+		}
+	}
 	proxy, err := url.Parse(in_req.GetProxyHost())
 	if err != nil {
 		return nil, err
